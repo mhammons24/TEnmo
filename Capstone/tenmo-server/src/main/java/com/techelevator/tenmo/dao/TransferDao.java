@@ -15,7 +15,9 @@ public interface TransferDao {
 	
 	List<Transfer> viewPending(int userId);
 	
-	Transfer approveRequest(int transferId);
+	void approveRequest(int transferId);
 	
-	Transfer rejectRequest( int transferId);
+	void rejectRequest( int transferId);
+	
+	Transfer getTransferById(int transferId);
 }

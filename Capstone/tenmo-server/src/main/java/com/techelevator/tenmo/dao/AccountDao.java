@@ -8,8 +8,8 @@ public interface AccountDao {
 
 	Account getAccount( int userId);
 	
-	void withdraw( int user );
+	void withdraw( int user, BigDecimal amount );
 	
-	void deposit( int user );
+	void deposit( int user, BigDecimal amount);
 	
 }

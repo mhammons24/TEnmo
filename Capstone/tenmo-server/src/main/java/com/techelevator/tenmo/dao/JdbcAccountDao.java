@@ -32,14 +32,17 @@ public class JdbcAccountDao implements AccountDao {
 	}
 
 	@Override
-	public void withdraw(int user) {
-		// TODO Auto-generated method stub
+	public void withdraw(int user, BigDecimal amount) {
+		String updateSql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
+		jdbcTemplate.update(updateSql, user, amount);
+		
 		
 	}
 
 	@Override
-	public void deposit(int user) {
-		// TODO Auto-generated method stub
+	public void deposit(int user, BigDecimal amount) {
+		String updateSql = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
+		jdbcTemplate.update(updateSql, user, amount);	
 		
 	}
 	
