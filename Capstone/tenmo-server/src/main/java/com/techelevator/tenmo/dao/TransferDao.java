@@ -7,17 +7,17 @@ import com.techelevator.tenmo.model.Transfer;
 
 public interface TransferDao {
 
-	List<Transfer> viewTranserByUserId(int userId);
+	List<Transfer> viewTranserByUserAccountId(int userAccountId);
 	
 	Transfer sendMoney(int senderId, int recipientId, BigDecimal amountToTransfer);
 	
 	Transfer requestMoney(int senderId, int personAskingId, BigDecimal amountToTransfer);
 	
-	List<Transfer> viewPending(int userId);
+	List<Transfer> viewPending(int userAccountId);
 	
 	void approveRequest(int transferId);
 	
 	void rejectRequest( int transferId);
 	
-	Transfer getTransferById(int transferId);
+	Transfer getTransferByAccountId(int transferId, int userAccountId);
 }

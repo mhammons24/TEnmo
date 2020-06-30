@@ -6,9 +6,10 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import com.techelevator.tenmo.model.Transfer;
-
+@Component
 public class JdbcTransferDao implements TransferDao {
 
 	 private JdbcTemplate jdbcTemplate;
@@ -20,10 +21,10 @@ public class JdbcTransferDao implements TransferDao {
 	
 	
 	@Override
-	public List<Transfer> viewTranserByUserId(int userId) {
+	public List<Transfer> viewTranserByUserAccountId(int userAccountId) {
 		List<Transfer> transferList = new ArrayList<Transfer>();
-		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE user_id = ?";
-		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userId);
+		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE account_from = ? OR account_to = ?";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
 			transferList.add(mapRowToTransfer(rowSet));
@@ -68,10 +69,10 @@ public class JdbcTransferDao implements TransferDao {
 	}
 
 	@Override
-	public List<Transfer> viewPending(int userId) {
+	public List<Transfer> viewPending(int userAccountId) {
 		List<Transfer> transferList = new ArrayList<Transfer>();
-		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE user_id = ? AND transfer_type_id = 1";
-		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userId);
+		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE (account_from = ? OR account_to = ?) AND transfer_type_id = 1";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
 			transferList.add(mapRowToTransfer(rowSet));
@@ -96,10 +97,10 @@ public class JdbcTransferDao implements TransferDao {
 
 
 	@Override
-	public Transfer getTransferById(int transferId) {
+	public Transfer getTransferByAccountId(int transferId, int userAccountId) {
 		Transfer transfer = new Transfer();
-		String selectSql ="SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ?";
-		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, transferId);
+		String selectSql ="SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ? AND (account_from = ? OR account_to = ?)";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, transferId, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
 			transfer = mapRowToTransfer(rowSet);
