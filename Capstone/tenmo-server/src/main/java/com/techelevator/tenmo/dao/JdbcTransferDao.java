@@ -97,7 +97,7 @@ public class JdbcTransferDao implements TransferDao {
 
 
 	@Override
-	public Transfer getTransferByAccountId(int transferId, int userAccountId) {
+	public Transfer getTransferByTransferId(int transferId, int userAccountId) {
 		Transfer transfer = new Transfer();
 		String selectSql ="SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ? AND (account_from = ? OR account_to = ?)";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, transferId, userAccountId, userAccountId);

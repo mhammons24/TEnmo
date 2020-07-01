@@ -19,5 +19,5 @@ public interface TransferDao {
 	
 	void rejectRequest( int transferId);
 	
-	Transfer getTransferByAccountId(int transferId, int userAccountId);
+	Transfer getTransferByTransferId(int transferId, int userAccountId);
 }
