@@ -1,7 +1,10 @@
 package com.techelevator.tenmo;
 
+import java.math.BigDecimal;
+
 import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
@@ -82,12 +85,15 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		setAuthToken();
+		accountService.addMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), 2000.00);
+		System.out.println(accountService.getAccount(currentUser.getUser().getId()).getBalance());
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+		Transfer transfer = transferService.getTransferById(2, 1);
+		System.out.println(transfer.getTransferId());
 	}
 
 	private void sendBucks() {

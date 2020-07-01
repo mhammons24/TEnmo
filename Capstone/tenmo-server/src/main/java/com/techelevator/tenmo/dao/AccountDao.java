@@ -10,6 +10,6 @@ public interface AccountDao {
 	
 	void withdraw( long userId, BigDecimal amount);
 	
-	void deposit( long userId, BigDecimal amount);
+	void deposit( long userId, Account account);
 	
 }

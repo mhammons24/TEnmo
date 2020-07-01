@@ -2,14 +2,14 @@ package com.techelevator.tenmo.models;
 
 public class User {
 
-	private Integer id;
+	private long id;
 	private String username;
 
-	public Integer getId() {
+	public long getId() {
 		return id;
 	}
 	
-	public void setId(Integer id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

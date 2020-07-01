@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
@@ -33,6 +34,18 @@ public class TransferService {
 			console.printError(ex.getMessage());
 		}
 
+	}
+	
+	public Transfer getTransferById(int transferId, int accountId) {
+		Transfer transfer = null;
+		try {
+			transfer = restTemplate.exchange(baseUrl + "accounts/"+ accountId + "transfers/"  + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return transfer;
 	}
 
 	public void setAuthToken(String authToken) {

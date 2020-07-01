@@ -43,8 +43,8 @@ public class AccountService {
 	}
 	
 	
-	public void addMoney(Account account, long userId, BigDecimal amountToAdd) {
-		
+	public void addMoney(Account account, long userId, double amountToAdd) {
+		account.setBalance(amountToAdd + account.getBalance());
 		try {
 			restTemplate.put(baseUrl + "accounts/" + userId + "/deposits", HttpMethod.PUT, makeAccountEntity(account));
 		    } catch (RestClientResponseException ex) {

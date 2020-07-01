@@ -40,9 +40,9 @@ public class JdbcAccountDao implements AccountDao {
 	}
 
 	@Override
-	public void deposit(long userId, BigDecimal amount) {
-		String updateSql = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(updateSql, amount, userId);	
+	public void deposit(long userId, Account account) {
+		String updateSql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+		jdbcTemplate.update(updateSql, account.getBalance(), userId);	
 		
 	}
 	
@@ -51,7 +51,7 @@ public class JdbcAccountDao implements AccountDao {
 		
 		account.setAccountId(rowSet.getInt("account_id"));
 		account.setUserId(rowSet.getInt("user_id"));
-		account.setBalance(BigDecimal.valueOf(rowSet.getDouble("balance")));
+		account.setBalance(rowSet.getDouble("balance"));
 		return account;
 	}
 

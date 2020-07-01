@@ -6,7 +6,7 @@ public class Account {
 	
 	private long userId;
 	private int accountId;
-	private BigDecimal balance;
+	private double balance;
 	public long getUserId() {
 		return userId;
 	}
@@ -19,10 +19,10 @@ public class Account {
 	public void setAccountId(int accountId) {
 		this.accountId = accountId;
 	}
-	public BigDecimal getBalance() {
+	public double getBalance() {
 		return balance;
 	}
-	public void setBalance(BigDecimal balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
 	}
 	@Override
@@ -30,7 +30,9 @@ public class Account {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + accountId;
-		result = prime * result + ((balance == null) ? 0 : balance.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(balance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (int) (userId ^ (userId >>> 32));
 		return result;
 	}
@@ -45,15 +47,13 @@ public class Account {
 		Account other = (Account) obj;
 		if (accountId != other.accountId)
 			return false;
-		if (balance == null) {
-			if (other.balance != null)
-				return false;
-		} else if (!balance.equals(other.balance))
+		if (Double.doubleToLongBits(balance) != Double.doubleToLongBits(other.balance))
 			return false;
 		if (userId != other.userId)
 			return false;
 		return true;
 	}
+
 
 	
 	
