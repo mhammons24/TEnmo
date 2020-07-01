@@ -39,7 +39,7 @@ public class TransferService {
 	public Transfer getTransferById(int transferId, int accountId) {
 		Transfer transfer = null;
 		try {
-			transfer = restTemplate.exchange(baseUrl + "accounts/"+ accountId + "transfers/"  + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+			transfer = restTemplate.exchange(baseUrl + "accounts/"+ accountId + "/transfers/"  + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
 		} catch (RestClientResponseException ex) {
 			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
 		} catch (ResourceAccessException ex) {
