@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 public class Account {
 	
-	private int userId;
+	private long userId;
 	private int accountId;
 	private BigDecimal balance;
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 	public int getAccountId() {
@@ -31,7 +31,7 @@ public class Account {
 		int result = 1;
 		result = prime * result + accountId;
 		result = prime * result + ((balance == null) ? 0 : balance.hashCode());
-		result = prime * result + userId;
+		result = prime * result + (int) (userId ^ (userId >>> 32));
 		return result;
 	}
 	@Override
@@ -54,7 +54,7 @@ public class Account {
 			return false;
 		return true;
 	}
-	
+
 	
 
 	

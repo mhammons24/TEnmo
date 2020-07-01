@@ -17,7 +17,7 @@ public class AccountService {
 		this.baseUrl = baseUrl;
 	}
 
-	public Account getAccount(int userId) {
+	public Account getAccount(long userId) {
 		Account account = null;
 		
 		try {

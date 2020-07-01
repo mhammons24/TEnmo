@@ -20,7 +20,7 @@ public class JdbcAccountDao implements AccountDao {
     }
     
 	@Override
-	public Account getAccount(int userId) {
+	public Account getAccount(long userId) {
 		String selectSql = "SELECT account_id, user_id, balance FROM accounts WHERE user_id = ?";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userId);
 		Account account = null;
@@ -32,17 +32,17 @@ public class JdbcAccountDao implements AccountDao {
 	}
 
 	@Override
-	public void withdraw(int user, BigDecimal amount) {
+	public void withdraw(long userId, BigDecimal amount) {
 		String updateSql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
-		jdbcTemplate.update(updateSql, user, amount);
+		jdbcTemplate.update(updateSql, amount, userId);
 		
 		
 	}
 
 	@Override
-	public void deposit(int user, BigDecimal amount) {
+	public void deposit(long userId, BigDecimal amount) {
 		String updateSql = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(updateSql, user, amount);	
+		jdbcTemplate.update(updateSql, amount, userId);	
 		
 	}
 	

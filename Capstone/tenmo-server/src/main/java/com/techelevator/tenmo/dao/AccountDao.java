@@ -6,10 +6,10 @@ import com.techelevator.tenmo.model.Account;
 
 public interface AccountDao {
 
-	Account getAccount( int userId);
+	Account getAccount( long userId);
 	
-	void withdraw( int user, BigDecimal amount );
+	void withdraw( long userId, BigDecimal amount);
 	
-	void deposit( int user, BigDecimal amount);
+	void deposit( long userId, BigDecimal amount);
 	
 }
