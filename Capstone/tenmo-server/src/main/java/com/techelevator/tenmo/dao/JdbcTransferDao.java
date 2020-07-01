@@ -14,7 +14,7 @@ public class JdbcTransferDao implements TransferDao {
 
 	 private JdbcTemplate jdbcTemplate;
 
-	    public void JdbcAccountDao(JdbcTemplate jdbcTemplate) {
+	    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
 	        this.jdbcTemplate = jdbcTemplate;
 	    }
 	
@@ -99,7 +99,7 @@ public class JdbcTransferDao implements TransferDao {
 	@Override
 	public void rejectRequest(int transferId) {
 		
-		String updateSql = "UPDATE transfers SET transfer_status_id = 0 WHERE transfer_id = ?";
+		String updateSql = "UPDATE transfers SET transfer_status_id = 3 WHERE transfer_id = ?";
 		jdbcTemplate.update(updateSql, transferId);
 		
 		

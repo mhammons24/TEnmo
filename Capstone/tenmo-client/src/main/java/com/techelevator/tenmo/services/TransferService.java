@@ -19,7 +19,7 @@ public class TransferService {
 	public void approveTransfer(int transferId) {
 		
 		try {
-			restTemplate.put(baseUrl + "transfers/" + transferId, Transfer.class);
+			restTemplate.put(baseUrl + "transfers/approve/" + transferId, Transfer.class);
 		    } catch (RestClientResponseException ex) {
 		      console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
 		    } catch (ResourceAccessException ex) {
