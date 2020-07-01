@@ -49,6 +49,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("*********************");
 		
 		registerAndLogin();
+		setAuthToken();
 		mainMenu();
 	}
 
@@ -98,6 +99,12 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private void setAuthToken() {
+		transferService.setAuthToken(currentUser.getToken());
+		accountService.setAuthToken(currentUser.getToken());
+	}
+	
 	
 	private void exitProgram() {
 		System.exit(0);

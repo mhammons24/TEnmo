@@ -22,7 +22,6 @@ import com.techelevator.tenmo.dao.UserSqlDAO;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 
-import junit.framework.Assert;
 
 public class JdbcTransferTest {
 	private static JdbcTransferDao transferDao;

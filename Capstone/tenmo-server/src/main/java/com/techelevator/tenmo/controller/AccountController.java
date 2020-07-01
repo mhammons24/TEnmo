@@ -1,5 +1,8 @@
 package com.techelevator.tenmo.controller;
 
+import java.math.BigDecimal;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class AccountController {
 	
@@ -22,6 +26,16 @@ public class AccountController {
 	public Account getAccount(@PathVariable("id") long userId) {
 		return accountDao.getAccount(userId);
 		
+	}
+	
+	@RequestMapping(path = "/accounts/{id}/deposits", method = RequestMethod.PUT)
+	public void addMoney(@PathVariable("id") long userId, BigDecimal amountToAdd) {
+		accountDao.deposit(userId, amountToAdd);
+	}
+	
+	@RequestMapping(path = "/accounts/{id}/withdraws", method = RequestMethod.PUT)
+	public void giveMoney(@PathVariable("id") long userId, BigDecimal amountToAdd) {
+		accountDao.withdraw(userId, amountToAdd);
 	}
 	
 
