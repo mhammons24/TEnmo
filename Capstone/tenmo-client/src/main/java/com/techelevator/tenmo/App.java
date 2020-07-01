@@ -87,6 +87,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		// TODO Auto-generated method stub
 		setAuthToken();
 		accountService.addMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), 2000.00);
+		accountService.removeMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), 1000.00);
 		System.out.println(accountService.getAccount(currentUser.getUser().getId()).getBalance());
 	}
 
@@ -97,7 +98,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

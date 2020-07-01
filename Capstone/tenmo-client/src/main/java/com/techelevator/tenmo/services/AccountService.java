@@ -46,7 +46,18 @@ public class AccountService {
 	public void addMoney(Account account, long userId, double amountToAdd) {
 		account.setBalance(amountToAdd + account.getBalance());
 		try {
-			restTemplate.put(baseUrl + "accounts/" + userId + "/deposits", HttpMethod.PUT, makeAccountEntity(account));
+			restTemplate.exchange(baseUrl + "accounts/" + userId + "/deposits", HttpMethod.PUT, makeAccountEntity(account), Void.class);
+		    } catch (RestClientResponseException ex) {
+		      console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		    } catch (ResourceAccessException ex) {
+		      console.printError(ex.getMessage());
+		    }
+	}
+	
+	public void removeMoney(Account account, long userId, double amountToRemove) {
+		account.setBalance(account.getBalance() - amountToRemove);
+		try {
+			restTemplate.exchange(baseUrl + "accounts/" + userId + "/deposits", HttpMethod.PUT, makeAccountEntity(account), Void.class);
 		    } catch (RestClientResponseException ex) {
 		      console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
 		    } catch (ResourceAccessException ex) {
@@ -67,21 +78,6 @@ public class AccountService {
 		headers.setBearerAuth(AUTH_TOKEN);
 		HttpEntity<Account> entity = new HttpEntity<>(headers);
 		return entity;
-		}
-	
-	
-	
-	
-	//	  public Reservation getReservation(int reservationId) {
-//		    Reservation reservation = null;
-//		    try {
-//		      reservation = restTemplate.getForObject(BASE_URL + "reservations/" + reservationId, Reservation.class);
-//		    } catch (RestClientResponseException ex) {
-//		      console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
-//		    } catch (ResourceAccessException ex) {
-//		      console.printError(ex.getMessage());
-//		    }
-//		    return reservation;
-//		  }
+	}
 
 }
