@@ -1,5 +1,8 @@
 package com.techelevator.tenmo.services;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,11 +38,47 @@ public class TransferService {
 		}
 
 	}
-	
+	//works
 	public Transfer getTransferById(int transferId, int accountId) {
 		Transfer transfer = null;
 		try {
 			transfer = restTemplate.exchange(baseUrl + "accounts/"+ accountId + "/transfers/"  + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return transfer;
+	}
+//works
+	public Transfer[] getTransferByAccountId(int accountId) {
+		Transfer[] transfers = null;
+		try {
+			transfers = restTemplate.exchange(baseUrl + "accounts/"+ accountId + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return transfers;
+	}
+//works	
+	public Transfer[] getPendingTransfers(int accountId) {
+		Transfer[] transfers = null;
+		try {
+			transfers = restTemplate.exchange(baseUrl + "accounts/" + accountId + "/transfers/pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return transfers;
+	}
+	
+	public Transfer sendMoney(Transfer transfer) {
+		
+		try {
+			transfer = restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, makeAuthEntity(), Transfer.class).getBody();
 		} catch (RestClientResponseException ex) {
 			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
 		} catch (ResourceAccessException ex) {

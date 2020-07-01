@@ -9,7 +9,7 @@ public class Transfer {
 	private int transferStatusId;
 	private int accountFromId;
 	private int accountToId;
-	private BigDecimal amountTransferred;
+	private double amountTransferred;
 	public int getTransferId() {
 		return transferId;
 	}
@@ -40,10 +40,10 @@ public class Transfer {
 	public void setAccountToId(int accountToId) {
 		this.accountToId = accountToId;
 	}
-	public BigDecimal getAmountTransferred() {
+	public double getAmountTransferred() {
 		return amountTransferred;
 	}
-	public void setAmountTransferred(BigDecimal amountTransferred) {
+	public void setAmountTransferred(double amountTransferred) {
 		this.amountTransferred = amountTransferred;
 	}
 	@Override
@@ -52,7 +52,9 @@ public class Transfer {
 		int result = 1;
 		result = prime * result + accountFromId;
 		result = prime * result + accountToId;
-		result = prime * result + ((amountTransferred == null) ? 0 : amountTransferred.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(amountTransferred);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + transferId;
 		result = prime * result + transferStatusId;
 		result = prime * result + transferTypeId;
@@ -71,10 +73,7 @@ public class Transfer {
 			return false;
 		if (accountToId != other.accountToId)
 			return false;
-		if (amountTransferred == null) {
-			if (other.amountTransferred != null)
-				return false;
-		} else if (!amountTransferred.equals(other.amountTransferred))
+		if (Double.doubleToLongBits(amountTransferred) != Double.doubleToLongBits(other.amountTransferred))
 			return false;
 		if (transferId != other.transferId)
 			return false;
@@ -84,6 +83,8 @@ public class Transfer {
 			return false;
 		return true;
 	}
+
+	
 	
 	
 	

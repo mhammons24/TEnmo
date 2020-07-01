@@ -1,6 +1,9 @@
 package com.techelevator.tenmo;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
@@ -92,13 +95,15 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		Transfer transfer = transferService.getTransferById(2, 1);
-		System.out.println(transfer.getTransferId());
+		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(1));
+		System.out.println(transfers.get(0).getAmountTransferred());
 	}
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		Transfer transfer = transferService.getTransferById(1, 1);
+		transfer = transferService.sendMoney(transfer);
+		System.out.println(transfer.getAmountTransferred());
 	}
 
 	private void requestBucks() {

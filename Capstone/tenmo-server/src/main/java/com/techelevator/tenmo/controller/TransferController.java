@@ -21,24 +21,24 @@ public class TransferController {
 	public TransferController(TransferDao transferDao) {
 		this.transferDao = transferDao;
 	}
-
+//done
 	@RequestMapping(path = "/accounts/{id}/transfers", method = RequestMethod.GET)
 	public List<Transfer> getTransfersByUserAccountId(@PathVariable("id") int userAccountId) {
 		return transferDao.viewTranserByUserAccountId(userAccountId);
 
 	}
-
+//done
 	@RequestMapping(path = "/accounts/{id}/transfers/{id}", method = RequestMethod.GET)
 	public Transfer getTransferById(@PathVariable("id") int accountId, @PathVariable("id") int transferId) {
 		return transferDao.getTransferByTransferId(transferId, accountId);
 	}
 
-	@RequestMapping(path = "/transfers/approve/{id}", method = RequestMethod.PUT)
+	@RequestMapping(path = "/transfers/{id}/approve", method = RequestMethod.PUT)
 	public void approveTransfer(@PathVariable("id") int transferId) {
 		transferDao.approveRequest(transferId);
 	}
 
-	@RequestMapping(path = "/accounts/{id}/transfers/filter/transfer_status_id=1", method = RequestMethod.GET)
+	@RequestMapping(path = "/accounts/{id}/transfers/pending", method = RequestMethod.GET)
 	public List<Transfer> viewPendingTransfers(@PathVariable("id") int accountId) {
 		List<Transfer> pendingTransfers = transferDao.viewPending(accountId);
 

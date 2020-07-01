@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class JdbcTransferDao implements TransferDao {
 	}
 
 	@Override
-	public Transfer sendMoney(int senderId, int recipientId, BigDecimal amountToTransfer) {
+	public Transfer sendMoney(int senderId, int recipientId, double amountToTransfer) {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId(senderId);
 		transfer.setAccountToId(recipientId);
@@ -53,7 +52,7 @@ public class JdbcTransferDao implements TransferDao {
 	}
 
 	@Override
-	public Transfer requestMoney(int senderId, int personAskingId, BigDecimal amountToTransfer) {
+	public Transfer requestMoney(int senderId, int personAskingId, double amountToTransfer) {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId(senderId);
 		transfer.setAccountToId(personAskingId);
@@ -127,7 +126,7 @@ public class JdbcTransferDao implements TransferDao {
 		transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
 		transfer.setAccountFromId(rowSet.getInt("account_from"));
 		transfer.setAccountToId(rowSet.getInt("account_to"));
-		transfer.setAmountTransferred(rowSet.getBigDecimal("amount"));
+		transfer.setAmountTransferred(rowSet.getDouble("amount"));
 		transfer.setTransferId(rowSet.getInt("transfer_id"));
 		
 		return transfer;
