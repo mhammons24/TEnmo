@@ -9,14 +9,21 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import com.techelevator.tenmo.model.Transfer;
+
 @Component
 public class JdbcTransferDao implements TransferDao {
 
 	 private JdbcTemplate jdbcTemplate;
 
+<<<<<<< HEAD
 	    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
 	        this.jdbcTemplate = jdbcTemplate;
 	    }
+=======
+	 public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
+		 this.jdbcTemplate = jdbcTemplate;
+		 }
+>>>>>>> 3d7242bd5e3179f41659eafe48f7992da8085075
 	
 	
 	
