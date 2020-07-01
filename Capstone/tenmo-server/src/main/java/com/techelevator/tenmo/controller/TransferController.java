@@ -29,7 +29,7 @@ public class TransferController {
 
 	}
 
-	@RequestMapping(path = "accounts/{id}/transfers/{id}", method = RequestMethod.GET)
+	@RequestMapping(path = "/accounts/{id}/transfers/{id}", method = RequestMethod.GET)
 	public Transfer getTransferById(@PathVariable("id") int accountId, @PathVariable("id") int transferId) {
 		return transferDao.getTransferByTransferId(transferId, accountId);
 	}
