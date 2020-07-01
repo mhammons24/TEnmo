@@ -22,7 +22,7 @@ import com.techelevator.tenmo.model.User;
 
 
 
-public class AccountTest {
+public class JdbcAccountTest {
 	
 	private static JdbcAccountDao accountDao;
 	private static JdbcTemplate jdbcTemplate;

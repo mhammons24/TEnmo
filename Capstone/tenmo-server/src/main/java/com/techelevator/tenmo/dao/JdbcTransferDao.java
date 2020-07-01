@@ -15,17 +15,11 @@ public class JdbcTransferDao implements TransferDao {
 
 	 private JdbcTemplate jdbcTemplate;
 
-<<<<<<< HEAD
+
 	    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
 	        this.jdbcTemplate = jdbcTemplate;
 	    }
-=======
-	 public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
-		 this.jdbcTemplate = jdbcTemplate;
-		 }
->>>>>>> 3d7242bd5e3179f41659eafe48f7992da8085075
-	
-	
+
 	
 	@Override
 	public List<Transfer> viewTranserByUserAccountId(int userAccountId) {
