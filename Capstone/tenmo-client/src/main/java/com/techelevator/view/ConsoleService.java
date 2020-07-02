@@ -7,6 +7,14 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
+import org.apache.commons.exec.util.StringUtils;
+
+import com.techelevator.tenmo.models.Transfer;
+import com.techelevator.tenmo.models.User;
+import com.techelevator.tenmo.services.UserService;
+
+
+
 public class ConsoleService {
 
 	private PrintWriter out;
@@ -15,6 +23,7 @@ public class ConsoleService {
 	public ConsoleService(InputStream input, OutputStream output) {
 		this.out = new PrintWriter(output, true);
 		this.in = new Scanner(input);
+		
 	}
 
 	public Object getChoiceFromOptions(Object[] options) {
@@ -107,5 +116,27 @@ public class ConsoleService {
 	
 	public void printMessageToUser(String message) {
 		System.out.println(message);
+	}
+	
+	public void printTransferDeatils(User fromUser, User toUser, Transfer transfer, String message) {
+		String repeat = new String(new char[message.length()]).replace("\0", "-");
+		System.out.println(repeat);
+		System.out.println(message);
+		System.out.println(repeat);
+		System.out.println("Details");
+		System.out.println("```````");
+		System.out.println("Id: " + transfer.getTransferId());
+		System.out.println("From: " + fromUser.getUsername());
+		System.out.println("To: " + toUser.getUsername());
+		System.out.println("Type: " + transfer.getTransferType());
+		System.out.println("Status: " + transfer.getTransferStatus());
+		System.out.println("Amount: " + transfer.getAmountTransferred());
+		System.out.println();
+//		 Id: 23
+//		 From: Bernice
+//		 To: Me Myselfandi
+//		 Type: Send
+//		 Status: Approved
+//		 Amount: $903.14
 	}
 }

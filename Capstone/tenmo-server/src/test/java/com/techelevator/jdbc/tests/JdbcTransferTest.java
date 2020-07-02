@@ -96,20 +96,20 @@ public class JdbcTransferTest {
 	
 	@Test 
 	public void sending_money_approved_status() {
-		Transfer transfer = transferDao.sendMoney(accountDao.getAccount(testUser1.getId()).getAccountId(),accountDao.getAccount(testUser2.getId()).getAccountId(), BigDecimal.valueOf(30).setScale(2));
-		Assertions.assertEquals(BigDecimal.valueOf(30).setScale(2), transfer.getAmountTransferred());
-		Assertions.assertEquals(2, transfer.getTransferStatusId());
-		Assertions.assertEquals(2, transfer.getTransferTypeId());
+		Transfer transfer = transferDao.sendMoney(accountDao.getAccount(testUser1.getId()).getAccountId(),accountDao.getAccount(testUser2.getId()).getAccountId(), 30);
+		Assertions.assertEquals(30, transfer.getAmountTransferred());
+		Assertions.assertEquals("Approved", transfer.getTransferStatus());
+		Assertions.assertEquals("Send", transfer.getTransferType());
 		Assertions.assertEquals(accountDao.getAccount(testUser1.getId()).getAccountId(), transfer.getAccountFromId());
 		Assertions.assertEquals(accountDao.getAccount(testUser2.getId()).getAccountId(), transfer.getAccountToId());
 	}
 	
 	@Test 
 	public void request_money() {
-		Transfer transfer = transferDao.requestMoney(accountDao.getAccount(testUser1.getId()).getAccountId(),accountDao.getAccount(testUser2.getId()).getAccountId(), BigDecimal.valueOf(30).setScale(2));
-		Assertions.assertEquals(BigDecimal.valueOf(30).setScale(2), transfer.getAmountTransferred());
-		Assertions.assertEquals(1, transfer.getTransferStatusId());
-		Assertions.assertEquals(1, transfer.getTransferTypeId());
+		Transfer transfer = transferDao.requestMoney(accountDao.getAccount(testUser1.getId()).getAccountId(),accountDao.getAccount(testUser2.getId()).getAccountId(), 30);
+		Assertions.assertEquals(30, transfer.getAmountTransferred());
+		Assertions.assertEquals("Pending", transfer.getTransferStatus());
+		Assertions.assertEquals("Request", transfer.getTransferType());
 		Assertions.assertEquals(accountDao.getAccount(testUser1.getId()).getAccountId(), transfer.getAccountFromId());
 		Assertions.assertEquals(accountDao.getAccount(testUser2.getId()).getAccountId(), transfer.getAccountToId());
 	}
@@ -136,9 +136,9 @@ public class JdbcTransferTest {
 		saveTransfer(firstTransfer);
 		transferDao.rejectRequest(firstTransfer.getTransferId());
 		Transfer transfer = transferDao.getTransferByTransferId(firstTransfer.getTransferId(), accountDao.getAccount(testUser2.getId()).getAccountId());
-		Assertions.assertEquals(BigDecimal.valueOf(30).setScale(2), transfer.getAmountTransferred());
-		Assertions.assertEquals(3, transfer.getTransferStatusId());
-		Assertions.assertEquals(1, transfer.getTransferTypeId());
+		Assertions.assertEquals(30, transfer.getAmountTransferred());
+		Assertions.assertEquals("Rejected", transfer.getTransferStatus());
+		Assertions.assertEquals("Request", transfer.getTransferType());
 		Assertions.assertEquals(accountDao.getAccount(testUser1.getId()).getAccountId(), transfer.getAccountFromId());
 		Assertions.assertEquals(accountDao.getAccount(testUser2.getId()).getAccountId(), transfer.getAccountToId());
 	}
@@ -149,17 +149,16 @@ public class JdbcTransferTest {
 		saveTransfer(firstTransfer);
 		transferDao.approveRequest(firstTransfer.getTransferId());
 		Transfer transfer = transferDao.getTransferByTransferId(firstTransfer.getTransferId(), accountDao.getAccount(testUser2.getId()).getAccountId());
-		Assertions.assertEquals(BigDecimal.valueOf(30).setScale(2), transfer.getAmountTransferred());
-		Assertions.assertEquals(2, transfer.getTransferStatusId());
-		Assertions.assertEquals(1, transfer.getTransferTypeId());
+		Assertions.assertEquals(30, transfer.getAmountTransferred());
+		Assertions.assertEquals("Approved", transfer.getTransferStatus());
+		Assertions.assertEquals("Request", transfer.getTransferType());
 		Assertions.assertEquals(accountDao.getAccount(testUser1.getId()).getAccountId(), transfer.getAccountFromId());
 		Assertions.assertEquals(accountDao.getAccount(testUser2.getId()).getAccountId(), transfer.getAccountToId());
 	}
 
 	private void saveTransfer(Transfer transfer) {
-		String insertSql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id";
-		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(insertSql, transfer.getTransferTypeId(),
-				transfer.getTransferStatusId(), transfer.getAccountFromId(), transfer.getAccountToId(),
+		String insertSql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (1, 1, ?, ?, ?) RETURNING transfer_id";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(insertSql, transfer.getAccountFromId(), transfer.getAccountToId(),
 				transfer.getAmountTransferred());
 		while (rowSet.next()) {
 			transfer.setTransferId(rowSet.getInt("transfer_id"));
@@ -172,9 +171,8 @@ public class JdbcTransferTest {
 
 		transfer.setAccountFromId(accountDao.getAccount(testUser1.getId()).getAccountId());
 		transfer.setAccountToId(accountDao.getAccount(testUser2.getId()).getAccountId());
-		transfer.setAmountTransferred(BigDecimal.valueOf(30).setScale(2));
-		transfer.setTransferTypeId(1);
-		transfer.setTransferStatusId(1);
+		transfer.setAmountTransferred(30);
+
 		return transfer;
 	}
 }

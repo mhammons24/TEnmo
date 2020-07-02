@@ -23,7 +23,10 @@ public class JdbcTransferDao implements TransferDao {
 	@Override
 	public List<Transfer> viewTranserByUserAccountId(int userAccountId) {
 		List<Transfer> transferList = new ArrayList<Transfer>();
-		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE account_from = ? OR account_to = ?";
+		String selectSql = "SELECT transfers.transfer_id, transfer_type_desc AS transfer_type, transfer_status_desc AS transfer_status, account_from, account_to, amount FROM transfers \n" + 
+				"JOIN transfer_types ON transfers.transfer_type_id = transfer_types.transfer_type_id\n" + 
+				"JOIN transfer_statuses ON transfers.transfer_status_id = transfer_statuses.transfer_status_id\n" + 
+				"WHERE account_from = ? OR account_to = ?";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
@@ -39,8 +42,8 @@ public class JdbcTransferDao implements TransferDao {
 		transfer.setAccountFromId(senderId);
 		transfer.setAccountToId(recipientId);
 		transfer.setAmountTransferred(amountToTransfer);
-		transfer.setTransferStatusId(2);
-		transfer.setTransferTypeId(2);
+		transfer.setTransferStatus("Approved");
+		transfer.setTransferType("Send");
 		String insertSql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES ( 2, 2, ?, ?, ?) RETURNING transfer_id";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(insertSql, senderId, recipientId, amountToTransfer);
 		
@@ -57,8 +60,8 @@ public class JdbcTransferDao implements TransferDao {
 		transfer.setAccountFromId(senderId);
 		transfer.setAccountToId(personAskingId);
 		transfer.setAmountTransferred(amountToTransfer);
-		transfer.setTransferStatusId(1);
-		transfer.setTransferTypeId(1);
+		transfer.setTransferStatus("Pending");
+		transfer.setTransferType("Request");
 		String insertSql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES ( 1, 1, ?, ?, ?) RETURNING transfer_id";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(insertSql, senderId, personAskingId, amountToTransfer);
 		
@@ -71,7 +74,10 @@ public class JdbcTransferDao implements TransferDao {
 	@Override
 	public List<Transfer> viewPending(int userAccountId) {
 		List<Transfer> transferList = new ArrayList<Transfer>();
-		String selectSql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE (account_from = ? OR account_to = ?) AND transfer_type_id = 1";
+		String selectSql = "SELECT transfers.transfer_id, transfer_type_desc AS transfer_type, transfer_status_desc AS transfer_status, account_from, account_to, amount FROM transfers \n" + 
+				"JOIN transfer_types ON transfers.transfer_type_id = transfer_types.transfer_type_id\n" + 
+				"JOIN transfer_statuses ON transfers.transfer_status_id = transfer_statuses.transfer_status_id\n" + 
+				"WHERE (account_from = ? OR account_to = ?) AND transfers.transfer_type_id = 1";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
@@ -83,17 +89,10 @@ public class JdbcTransferDao implements TransferDao {
 
 	@Override
 	public void approveRequest(int transferId) {
-		//Transfer transfer = new Transfer();
+
 		String updateSql = "UPDATE transfers SET transfer_status_id = 2 WHERE transfer_id = ?";
 		jdbcTemplate.update(updateSql, transferId);
-//		String selectSql ="SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ?)";
-//		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, transferId);
-//		
-//		while (rowSet.next()) {
-//			transfer = mapRowToTransfer(rowSet);
-//		}
-		
-		//return transfer;
+
 	}
 
 	@Override
@@ -109,7 +108,10 @@ public class JdbcTransferDao implements TransferDao {
 	@Override
 	public Transfer getTransferByTransferId(int transferId, int userAccountId) {
 		Transfer transfer = new Transfer();
-		String selectSql ="SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ? AND (account_from = ? OR account_to = ?)";
+		String selectSql ="SELECT transfers.transfer_id, transfer_type_desc AS transfer_type, transfer_status_desc AS transfer_status, account_from, account_to, amount FROM transfers \n" + 
+				"JOIN transfer_types ON transfers.transfer_type_id = transfer_types.transfer_type_id\n" + 
+				"JOIN transfer_statuses ON transfers.transfer_status_id = transfer_statuses.transfer_status_id\n" + 
+				"WHERE transfer_id = ? AND (account_from = ? OR account_to = ?)";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, transferId, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
@@ -122,8 +124,8 @@ public class JdbcTransferDao implements TransferDao {
 	
 	private Transfer mapRowToTransfer(SqlRowSet rowSet) {
 		Transfer transfer = new Transfer();
-		transfer.setTransferTypeId(rowSet.getInt("transfer_type_id"));
-		transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
+		transfer.setTransferType(rowSet.getString("transfer_type"));
+		transfer.setTransferStatus(rowSet.getString("transfer_status"));
 		transfer.setAccountFromId(rowSet.getInt("account_from"));
 		transfer.setAccountToId(rowSet.getInt("account_to"));
 		transfer.setAmountTransferred(rowSet.getDouble("amount"));

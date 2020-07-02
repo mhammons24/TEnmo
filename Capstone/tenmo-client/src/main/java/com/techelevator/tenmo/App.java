@@ -2,6 +2,7 @@ package com.techelevator.tenmo;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,6 +79,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				requestBucks();
 			} else if(MAIN_MENU_OPTION_LOGIN.equals(choice)) {
 				login();
+				setAuthToken();
 			} else {
 				// the only other option on the main menu is to exit
 				exitProgram();
@@ -105,21 +107,28 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-
-		Transfer transfer = new Transfer();
-		transfer.setAccountFromId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
-		String userTo = console.getUserInput("Which user would you like to send money to? (0 to cancel)");
+		console.printMessageToUser("Which user would you like to send money to? (0 to cancel)");
+		String userToName = getNameFromUser();
+		if(userToName.equals(currentUser.getUser().getUsername())) {
+			console.printMessageToUser("You cannot send money to yourself.......");
+		}
+		Transfer transfer = getTransferInfo();
+		transfer.setAccountToId(accountService.getAccount(userService.getIdByUsername(userToName)).getAccountId());
 		
-		//transfer.setAccountToId(userTo);
-		double amountToSend = console.getMoneyChoiceFromUser();
-		if(amountToSend == 0) {
+		
+		if(transfer.getAmountTransferred() == Integer.MAX_VALUE) {
 			console.printMessageToUser("Transaction cancelled.");
 			return;
-		} 
-		transfer.setAmountTransferred(amountToSend);
+		}  else if (accountService.getAccount(currentUser.getUser().getId()).getBalance() < transfer.getAmountTransferred()) {
+			console.printMessageToUser("You only have $" + BigDecimal.valueOf(accountService.getAccount(currentUser.getUser().getId()).getBalance()).setScale(2) + ". Please try later.");
+			return;
+		}
 		
-		//transferService.sendMoney(null)
-
+		transfer = transferService.sendMoney(transfer);
+		User userTo = userService.getUserByUsername(userToName);
+		accountService.addMoney(accountService.getAccount(userTo.getId()), userTo.getId(), transfer.getAmountTransferred());
+		accountService.removeMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), transfer.getAmountTransferred());
+		console.printTransferDeatils(currentUser.getUser(), userTo, transfer, "You successfully transferred money to " + userToName + "!");
 	}
 
 	private void requestBucks() {
@@ -171,7 +180,24 @@ private static final String API_BASE_URL = "http://localhost:8080/";
             }
         }
 	}
-
+	private String getNameFromUser() {
+		List<String> users = new ArrayList<String>();
+		for( User user : userService.listUsers()) {
+			users.add(user.getUsername());
+		}
+		return console.getChoiceFromOptions(users.toArray()).toString();
+	}
+	
+	private Transfer getTransferInfo() {
+		Transfer transfer = new Transfer();
+		transfer.setAccountFromId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
+		double amountToSend = console.getMoneyChoiceFromUser();
+		if (amountToSend == 0) {
+			transfer.setAmountTransferred(Integer.MAX_VALUE);
+		}
+		transfer.setAmountTransferred(amountToSend);
+		return transfer;
+	}
 	private void login() {
 		System.out.println("Please log in");
 		currentUser = null;

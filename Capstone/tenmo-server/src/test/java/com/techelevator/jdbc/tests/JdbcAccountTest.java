@@ -86,8 +86,8 @@ public class JdbcAccountTest {
 	public void addBalanceToAccount() {
 		Account testAccount = getTestAccount();
 		saveAccount(testAccount);
-		BigDecimal testBalance = testAccount.getBalance().add(BigDecimal.valueOf(200.00));
-		accountDao.deposit(testAccount.getUserId(), BigDecimal.valueOf(200.00));
+		double testBalance = testAccount.getBalance();
+		accountDao.deposit(testAccount.getUserId(), testAccount);
 		testAccount = accountDao.getAccount(testAccount.getUserId());
 		assertEquals(testBalance, testAccount.getBalance());
 		
@@ -96,7 +96,7 @@ public class JdbcAccountTest {
 	@Test
 	public void subtractBalanceFromAccount() {
 		Account testAccount = accountDao.getAccount(testUser.getId());
-		BigDecimal expectedBalance = BigDecimal.valueOf(800.00).setScale(2);
+		double expectedBalance = 800.00;
 		accountDao.withdraw(testAccount.getUserId(), BigDecimal.valueOf(200.00));
 		testAccount = accountDao.getAccount(testAccount.getUserId());
 		assertEquals(expectedBalance, testAccount.getBalance());
@@ -119,7 +119,7 @@ public class JdbcAccountTest {
 	private Account getTestAccount() {
 		Account account = new Account();
 		account.setUserId(3);
-		account.setBalance(BigDecimal.valueOf(1030.00));
+		account.setBalance(1030.00);
 		return account;
 	}
 }
