@@ -8,11 +8,13 @@ import java.util.List;
 import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.Transfer;
+import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -36,17 +38,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticationService authenticationService;
     private AccountService accountService;
     private TransferService transferService;
+    private UserService userService;
 
     public static void main(String[] args) {
-    	App app = new App(new AuthenticationService(API_BASE_URL), new AccountService(console , API_BASE_URL), new TransferService(console, API_BASE_URL));
+    	App app = new App(new AuthenticationService(API_BASE_URL), new AccountService(console , API_BASE_URL), new TransferService(console, API_BASE_URL), new UserService(console,  API_BASE_URL));
     	app.run();
     }
 
-    public App(AuthenticationService authenticationService, AccountService accountService, TransferService transferService) {
+    public App(AuthenticationService authenticationService, AccountService accountService, TransferService transferService, UserService userService) {
 
 		this.authenticationService = authenticationService;
 		this.accountService = accountService;
 		this.transferService = transferService;
+		this.userService = userService;
 	}
 
 	public void run() {
@@ -101,6 +105,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
+
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
 		String userTo = console.getUserInput("Which user would you like to send money to? (0 to cancel)");

@@ -22,20 +22,20 @@ public class TransferController {
 	public TransferController(TransferDao transferDao) {
 		this.transferDao = transferDao;
 	}
-//done
+
 	@RequestMapping(path = "/accounts/{id}/transfers", method = RequestMethod.GET)
 	public List<Transfer> getTransfersByUserAccountId(@PathVariable("id") int userAccountId) {
 		return transferDao.viewTranserByUserAccountId(userAccountId);
 
 	}
-//done
+
 	@RequestMapping(path = "/accounts/{id}/transfers/{id}", method = RequestMethod.GET)
 	public Transfer getTransferById(@PathVariable("id") int accountId, @PathVariable("id") int transferId) {
 		return transferDao.getTransferByTransferId(transferId, accountId);
 	}
 
 	@RequestMapping(path = "/transfers/{id}/approve", method = RequestMethod.PUT)
-	public void approveTransfer(@PathVariable("id") int transferId) {
+	public void approveTransfer(@RequestBody Transfer transfer, @PathVariable("id") int transferId) {
 		transferDao.approveRequest(transferId);
 	}
 
@@ -46,9 +46,9 @@ public class TransferController {
 		return pendingTransfers;
 	}
 
-	@RequestMapping(path = "/transfers/{id}", method = RequestMethod.PUT)
-	public void rejectTransfer(@PathVariable("id") int transferId) {
-		transferDao.approveRequest(transferId);
+	@RequestMapping(path = "/transfers/{id}/reject", method = RequestMethod.PUT)
+	public void rejectTransfer(@RequestBody Transfer transfer, @PathVariable("id") int transferId) {
+		transferDao.rejectRequest(transferId);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
@@ -56,6 +56,14 @@ public class TransferController {
 	public Transfer sendMoney(@RequestBody Transfer transfer) {
 
 		return transferDao.sendMoney(transfer.getAccountFromId(), transfer.getAccountToId(),
+				transfer.getAmountTransferred());
+	}
+	
+	@ResponseStatus(HttpStatus.CREATED)
+	@RequestMapping(path = "/transfers/requests", method = RequestMethod.POST)
+	public Transfer requestMoney(@RequestBody Transfer transfer) {
+
+		return transferDao.requestMoney(transfer.getAccountFromId(), transfer.getAccountToId(),
 				transfer.getAmountTransferred());
 	}
 }
