@@ -77,7 +77,7 @@ public class JdbcTransferDao implements TransferDao {
 		String selectSql = "SELECT transfers.transfer_id, transfer_type_desc AS transfer_type, transfer_status_desc AS transfer_status, account_from, account_to, amount FROM transfers \n" + 
 				"JOIN transfer_types ON transfers.transfer_type_id = transfer_types.transfer_type_id\n" + 
 				"JOIN transfer_statuses ON transfers.transfer_status_id = transfer_statuses.transfer_status_id\n" + 
-				"WHERE (account_from = ? OR account_to = ?) AND transfers.transfer_type_id = 1";
+				"WHERE (account_from = ? OR account_to = ?) AND transfers.transfer_status_id = 1";
 		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, userAccountId, userAccountId);
 		
 		while (rowSet.next()) {
