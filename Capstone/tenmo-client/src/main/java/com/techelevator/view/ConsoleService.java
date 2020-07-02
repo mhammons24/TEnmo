@@ -139,4 +139,11 @@ public class ConsoleService {
 //		 Status: Approved
 //		 Amount: $903.14
 	}
+	
+	public void printHeading3(String firstItem, String secondItem, String thirdItem) {
+		String printFormat = "%-5s %-10s %17s";
+		String repeat = new String(new char[34]).replace("\0", "-")
+		System.out.println(repeat);
+		System.out.println(String.format(printFormat, firstItem, secondItem, thirdItem));
+	}
 }
