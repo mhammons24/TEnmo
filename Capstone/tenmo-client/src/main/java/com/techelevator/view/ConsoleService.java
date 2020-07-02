@@ -63,6 +63,9 @@ public class ConsoleService {
 	private Object getChoiceFromUserInput(Object[] options) {
 		Object choice = null;
 		String userInput = in.nextLine();
+		if(userInput.equals("0")) {
+			return "0";
+		}
 		try {
 			int selectedOption = Integer.valueOf(userInput);
 			if (selectedOption > 0 && selectedOption <= options.length) {
@@ -72,7 +75,9 @@ public class ConsoleService {
 			// eat the exception, an error message will be displayed below since choice will
 			// be null
 		}
+		
 		if (choice == null) {
+			
 			out.println("\n*** " + userInput + " is not a valid option ***\n");
 		}
 		return choice;
@@ -100,6 +105,9 @@ public class ConsoleService {
 			out.print(prompt + ": ");
 			out.flush();
 			String userInput = in.nextLine();
+			if( userInput.equals("0")) {
+				userInput = "" + Integer.MAX_VALUE;
+			}
 			try {
 				result = Integer.parseInt(userInput);
 			} catch (NumberFormatException e) {
@@ -180,7 +188,7 @@ public class ConsoleService {
 			out.println(String.format(printFormat, optionNum, options[i]));
 		}
 		out.println();
-		out.print("Please select a user from the list.");
+		out.print("Please select a user Id from the list >>>>>");
 		out.flush();
 	}
 
