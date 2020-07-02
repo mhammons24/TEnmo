@@ -38,7 +38,7 @@ public class TransferService {
 		}
 
 	}
-	//works
+	
 	public Transfer getTransferById(int transferId, int accountId) {
 		Transfer transfer = null;
 		try {
@@ -50,7 +50,7 @@ public class TransferService {
 		}
 		return transfer;
 	}
-//works
+
 	public Transfer[] getTransferByAccountId(int accountId) {
 		Transfer[] transfers = null;
 		try {
@@ -62,7 +62,7 @@ public class TransferService {
 		}
 		return transfers;
 	}
-//works	
+	
 	public Transfer[] getPendingTransfers(int accountId) {
 		Transfer[] transfers = null;
 		try {
@@ -78,13 +78,49 @@ public class TransferService {
 	public Transfer sendMoney(Transfer transfer) {
 		
 		try {
-			transfer = restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, makeAuthEntity(), Transfer.class).getBody();
+			transfer = restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, makeHeader(transfer), Transfer.class).getBody();
 		} catch (RestClientResponseException ex) {
 			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
 		} catch (ResourceAccessException ex) {
 			console.printError(ex.getMessage());
 		}
 		return transfer;
+	}
+	
+	public Transfer requestMoney(Transfer transfer) {
+		
+		try {
+			transfer = restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, makeHeader(transfer), Transfer.class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return transfer;
+	}
+	
+	public void rejectTransfer(Transfer transfer, int transferId) {
+
+		try {
+			restTemplate.exchange(baseUrl + "transfers/" + transferId + "/reject", HttpMethod.PUT, makeHeader(transfer),
+					Void.class);
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+	}
+
+	public void approveTransfer(Transfer transfer, int transferId) {
+
+		try {
+			restTemplate.exchange(baseUrl + "transfers/" + transferId + "/approve", HttpMethod.PUT,
+					makeHeader(transfer), Void.class);
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
 	}
 
 	public void setAuthToken(String authToken) {
