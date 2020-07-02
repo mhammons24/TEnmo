@@ -90,7 +90,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				login();
 				setAuthToken();
 			} else if(MAIN_MENU_APPROVE_REJECT.equals(choice)) {
-				viewUsersRequests();
+				approveOrRejectTransfer(viewUsersRequests());
 				
 				
 			}
@@ -122,7 +122,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     		console.printTransferDeatils(userService.findUserByAccountId(transfers.get(i).getAccountFromId()).getUsername(), 
     				userService.findUserByAccountId(transfers.get(i).getAccountToId()).getUsername(), transfers.get(i), i + 1 + ".");
     		}
-		approveOrRejectTransfer(viewUsersRequests());
+		
 	}
 	
 	private void approveOrRejectTransfer(List<Transfer> transfers) {
@@ -164,7 +164,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		User userTo = userService.findUserByAccountId(updated.getAccountToId());
 		accountService.addMoney(accountService.getAccount(userTo.getId()), userTo.getId(), updated.getAmountTransferred());
 		accountService.removeMoney(accountService.getAccount(userFrom.getId()), userFrom.getId(), updated.getAmountTransferred());
-		console.printTransferDeatils(userFrom.getUsername(), userTo.getUsername(), updated, "You approved " + userTo + "'s request!");
+		console.printTransferDeatils(userFrom.getUsername(), userTo.getUsername(), updated, "You approved " + userTo.getUsername() + "'s request!");
 	}
 	
 	private void reject(Transfer transfer) {
