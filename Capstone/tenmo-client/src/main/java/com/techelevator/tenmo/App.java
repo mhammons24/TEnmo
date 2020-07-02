@@ -107,11 +107,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		setAuthToken();
-	
-		System.out.println(accountService.getAccount(currentUser.getUser().getId()).getBalance());
+		Transfer[] transferHistory = transferService.getTransferByAccountId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
+
+	    for (Transfer transfer: transferHistory) {
+	        console.printTransferDeatils(userService.findUserByAccountId(transfer.getAccountFromId()).getUsername(), userService.findUserByAccountId(transfer.getAccountToId()).getUsername(), transfer, "");
+	    }
+
 	}
+
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
@@ -174,6 +177,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				userService.findUserByAccountId(updated.getAccountToId()).getUsername(), updated,
 				"You rejected " + userService.findUserByAccountId(updated.getAccountToId()).getUsername() + "'s request!");
 	}
+	
+
 	
 	private List<Transfer> viewUsersRequests() {
 		int userFromAccountId = accountService.getAccount(currentUser.getUser().getId()).getAccountId();
