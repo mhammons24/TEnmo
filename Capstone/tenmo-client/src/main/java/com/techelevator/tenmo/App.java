@@ -1,5 +1,6 @@
 package com.techelevator.tenmo;
 
+import java.awt.Choice;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
 
+import io.cucumber.core.backend.Pending;
+
 public class App {
 
 private static final String API_BASE_URL = "http://localhost:8080/";
@@ -35,6 +38,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_APPROVE_REJECT = "Approve or reject request";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MAIN_MENU_APPROVE_REJECT ,MENU_OPTION_EXIT };
 	private static final String YOUR_BALANCE_IS = "Your current account balance is: $";
+	private static final String APPROVE = "Approve";
+	private static final String REJECT = "Reject";
+	private static final String CANCEL = "Cancel";
+	private static final String[] APPROVE_REJECT_OPTIONS = {APPROVE, REJECT, CANCEL};
 	private AuthenticatedUser currentUser;
     private static ConsoleService console = new ConsoleService(System.in, System.out);
     private AuthenticationService authenticationService;
@@ -67,6 +74,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void mainMenu() {
 		while(true) {
+			console.printHeading2("TEnmo", "", "Please Select an Option");
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
 				viewCurrentBalance();
@@ -83,6 +91,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				setAuthToken();
 			} else if(MAIN_MENU_APPROVE_REJECT.equals(choice)) {
 				viewUsersRequests();
+				
+				
 			}
 			else {
 				// the only other option on the main menu is to exit
@@ -112,18 +122,77 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     		console.printTransferDeatils(userService.findUserByAccountId(transfers.get(i).getAccountFromId()).getUsername(), 
     				userService.findUserByAccountId(transfers.get(i).getAccountToId()).getUsername(), transfers.get(i), i + 1 + ".");
     		}
+		approveOrRejectTransfer(viewUsersRequests());
 	}
 	
-	private void viewUsersRequests() {
-		int userFromAccountId = accountService.getAccount(currentUser.getUser().getId()).getAccountId();
-		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(userFromAccountId));
-		
-		for (int i = 0; i < transfers.size(); i++) {
-			if (userFromAccountId == transfers.get(i).getAccountFromId()) {
-				console.printApproveRejectTransfer(transfers.get(i), userService.findUserByAccountId(transfers.get(i).getAccountToId()).getUsername());
+	private void approveOrRejectTransfer(List<Transfer> transfers) {
+		if (transfers.size() < 1) {
+			return;
+		}
+		Transfer transferToUse = null;
+		while (transferToUse == null) {
+			int transferId = console.getUserInputInteger("Please enter transfer ID to approve/reject (0 to cancel): ");
+
+			for (Transfer transfer : transfers) {
+				if (transferId == transfer.getTransferId()) {
+					transferToUse = transfer;
+				}
+			}
+			if(transferId == 0) {
+				return;
 			}
 		}
-		
+		approveOrRejectMenu(transferToUse);
+
+	}
+	
+	private void approveOrRejectMenu(Transfer transfer) {
+		String choice = (String)console.getChoiceFromOptions(APPROVE_REJECT_OPTIONS);
+		if(APPROVE.equals(choice)) {
+			approve(transfer);
+		} else if (REJECT.equals(choice)) {
+			reject(transfer);
+		} else if (CANCEL.equals(choice)) {
+			console.printMessageToUser("Cancelled");
+		}
+	}
+	
+	private void approve(Transfer transfer) {
+		transferService.approveTransfer(transfer, transfer.getTransferId());
+		Transfer updated = transferService.getTransferById(transfer.getTransferId(), transfer.getAccountFromId());
+		User userFrom = userService.findUserByAccountId(updated.getAccountFromId());
+		User userTo = userService.findUserByAccountId(updated.getAccountToId());
+		accountService.addMoney(accountService.getAccount(userTo.getId()), userTo.getId(), updated.getAmountTransferred());
+		accountService.removeMoney(accountService.getAccount(userFrom.getId()), userFrom.getId(), updated.getAmountTransferred());
+		console.printTransferDeatils(userFrom.getUsername(), userTo.getUsername(), updated, "You approved " + userTo + "'s request!");
+	}
+	
+	private void reject(Transfer transfer) {
+		transferService.rejectTransfer(transfer, transfer.getTransferId());
+		Transfer updated = transferService.getTransferById(transfer.getTransferId(), transfer.getAccountFromId());
+		console.printTransferDeatils(userService.findUserByAccountId(updated.getAccountFromId()).getUsername(),
+				userService.findUserByAccountId(updated.getAccountToId()).getUsername(), updated,
+				"You rejected " + userService.findUserByAccountId(updated.getAccountToId()).getUsername() + "'s request!");
+	}
+	
+	private List<Transfer> viewUsersRequests() {
+		int userFromAccountId = accountService.getAccount(currentUser.getUser().getId()).getAccountId();
+		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(userFromAccountId));
+		List<Transfer> pendingRequests = new ArrayList<>();
+		for (int i = 0; i < transfers.size(); i++) {
+			if (userFromAccountId == transfers.get(i).getAccountFromId()) {
+				pendingRequests.add(transfers.get(i));
+			}
+		}
+		if (pendingRequests.size() < 1) {
+			console.printMessageToUser("You have no pending requests!");
+			return pendingRequests;
+		}
+		console.printHeading3("Pending Requests", "Id", "To", "Amount");
+		for(Transfer transfer : pendingRequests) {
+			console.printApproveRejectTransfer(transfer, userService.findUserByAccountId(transfer.getAccountToId()).getUsername());
+		}
+		return pendingRequests;
 	
 	}
 
@@ -221,7 +290,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		for( User user : userService.listUsers()) {
 			users.add(user.getUsername());
 		}
-		return console.getChoiceFromOptions(users.toArray()).toString();
+		console.printHeading2("Users", "#", "Username");
+		return console.getUserFromOptions(users.toArray()).toString();
 	}
 	
 	private Transfer getTransferInfo() {
