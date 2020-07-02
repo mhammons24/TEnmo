@@ -44,7 +44,7 @@ public class AccountService {
 	
 	
 	public void addMoney(Account account, long userId, double amountToAdd) {
-		account.setBalance(amountToAdd + account.getBalance());
+		account.setBalance(amountToAdd  + account.getBalance());
 		try {
 			restTemplate.exchange(baseUrl + "accounts/" + userId + "/deposits", HttpMethod.PUT, makeAccountEntity(account), Void.class);
 		    } catch (RestClientResponseException ex) {

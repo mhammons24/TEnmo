@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,7 +53,7 @@ public class TransferController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(path = "/transfers", method = RequestMethod.POST)
-	public Transfer sendMoney(Transfer transfer) {
+	public Transfer sendMoney(@RequestBody Transfer transfer) {
 
 		return transferDao.sendMoney(transfer.getAccountFromId(), transfer.getAccountToId(),
 				transfer.getAmountTransferred());

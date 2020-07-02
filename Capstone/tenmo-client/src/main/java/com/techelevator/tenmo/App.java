@@ -101,11 +101,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-
-		// TODO Auto-generated method stub
-		Transfer transfer = transferService.getTransferById(1, 1);
-		transfer = transferService.sendMoney(transfer);
-		System.out.println(transfer.getAmountTransferred());
+		Transfer transfer = new Transfer();
+		transfer.setAccountFromId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
+		String userTo = console.getUserInput("Which user would you like to send money to? (0 to cancel)");
+		
+		//transfer.setAccountToId(userTo);
+		double amountToSend = console.getMoneyChoiceFromUser();
+		if(amountToSend == 0) {
+			console.printMessageToUser("Transaction cancelled.");
+			return;
+		} 
+		transfer.setAmountTransferred(amountToSend);
+		
+		//transferService.sendMoney(null)
 
 	}
 

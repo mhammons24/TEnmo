@@ -4,6 +4,7 @@ package com.techelevator.view;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -24,6 +25,32 @@ public class ConsoleService {
 		}
 		out.println();
 		return choice;
+	}
+	
+	public double getMoneyChoiceFromUser() {
+		double choice = -1;
+		while (choice == -1) {
+			System.out.println("How much money would you like to send?  >>>> $");
+			try {
+				choice = Double.parseDouble(in.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("That is not a vaild amount.");
+				System.out.println();
+			}
+			if(choice == -1) {
+				continue;
+			}
+			if (BigDecimal.valueOf(choice).scale() > 2 || choice < 0) {
+				System.out.println("Send a positive amount with no more that 2 decimal places!! (42.42)");
+				choice = -1;
+			} else {
+				break;
+			}
+			
+		}
+		out.println();
+		return choice;
+		
 	}
 
 	private Object getChoiceFromUserInput(Object[] options) {
