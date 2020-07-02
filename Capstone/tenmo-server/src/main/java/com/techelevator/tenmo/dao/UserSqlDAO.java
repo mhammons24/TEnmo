@@ -22,6 +22,22 @@ public class UserSqlDAO implements UserDAO {
     public UserSqlDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+    
+    @Override
+	public User findUserByAccountId(int accountId) {
+		User user = new User();
+    	String selectSql = "SELECT users.user_id, username, password_hash FROM users\n" + 
+				"JOIN accounts ON users.user_id = accounts.user_id\n" + 
+				"WHERE account_id = ?";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(selectSql, accountId);
+		
+		while (rowSet.next()) {
+		user = mapRowToUser(rowSet);	
+		}
+		return user;
+	}
+    
+   
 
     @Override
     public int findIdByUsername(String username) {
@@ -88,4 +104,8 @@ public class UserSqlDAO implements UserDAO {
         user.setAuthorities("ROLE_USER");
         return user;
     }
+
+
+
+	
 }

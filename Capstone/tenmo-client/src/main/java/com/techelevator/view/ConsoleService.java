@@ -19,6 +19,7 @@ public class ConsoleService {
 
 	private PrintWriter out;
 	private Scanner in;
+	
 
 	public ConsoleService(InputStream input, OutputStream output) {
 		this.out = new PrintWriter(output, true);
@@ -36,10 +37,10 @@ public class ConsoleService {
 		return choice;
 	}
 	
-	public double getMoneyChoiceFromUser() {
+	public double getMoneyChoiceFromUser(String prompt) {
 		double choice = -1;
 		while (choice == -1) {
-			System.out.println("How much money would you like to send?  >>>> $");
+			System.out.println(prompt);
 			try {
 				choice = Double.parseDouble(in.nextLine());
 			} catch (NumberFormatException e) {
@@ -118,16 +119,19 @@ public class ConsoleService {
 		System.out.println(message);
 	}
 	
-	public void printTransferDeatils(User fromUser, User toUser, Transfer transfer, String message) {
-		String repeat = new String(new char[message.length()]).replace("\0", "-");
+	public void printApproveRejectTransfer(Transfer transfer, String toUsername) {
+		System.out.println(transfer.getTransferId() + "  " + toUsername + "  " + transfer.getAmountTransferred());
+		
+	}
+	
+	public void printTransferDeatils(String fromUsername, String toUsername, Transfer transfer, String message) {
+		String repeat = new String(new char[message.length() + 16]).replace("\0", "-");
 		System.out.println(repeat);
-		System.out.println(message);
+		System.out.println(message + " Details >>>>>>>");
 		System.out.println(repeat);
-		System.out.println("Details");
-		System.out.println("```````");
 		System.out.println("Id: " + transfer.getTransferId());
-		System.out.println("From: " + fromUser.getUsername());
-		System.out.println("To: " + toUser.getUsername());
+		System.out.println("From: " + fromUsername);
+		System.out.println("To: " + toUsername);
 		System.out.println("Type: " + transfer.getTransferType());
 		System.out.println("Status: " + transfer.getTransferStatus());
 		System.out.println("Amount: " + transfer.getAmountTransferred());

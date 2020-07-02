@@ -62,6 +62,17 @@ public class UserService {
 		return users;
 	}
 	
+	public User findUserByAccountId(int accountId) {
+		User user = new User();
+		try {
+			user =  restTemplate.exchange(baseUrl + "accounts/"+ accountId + "/users", HttpMethod.GET, makeAuthEntity(), User.class).getBody();
+		} catch (RestClientResponseException ex) {
+			console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			console.printError(ex.getMessage());
+		}
+		return user;
+	}
 	
 	
 	
