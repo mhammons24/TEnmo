@@ -32,9 +32,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_REQUEST_BUCKS = "Request TE bucks";
 	private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
-	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
+	private static final String MAIN_MENU_APPROVE_REJECT = "Approve or reject request";
+	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MAIN_MENU_APPROVE_REJECT ,MENU_OPTION_EXIT };
 	private static final String YOUR_BALANCE_IS = "Your current account balance is: $";
-    private AuthenticatedUser currentUser;
+	private AuthenticatedUser currentUser;
     private static ConsoleService console = new ConsoleService(System.in, System.out);
     private AuthenticationService authenticationService;
     private AccountService accountService;
@@ -80,7 +81,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			} else if(MAIN_MENU_OPTION_LOGIN.equals(choice)) {
 				login();
 				setAuthToken();
-			} else {
+			} else if(MAIN_MENU_APPROVE_REJECT.equals(choice)) {
+				viewUsersRequests();
+			}
+			else {
 				// the only other option on the main menu is to exit
 				exitProgram();
 			}
@@ -95,15 +99,32 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
 		setAuthToken();
-		accountService.addMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), 2000.00);
-		accountService.removeMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), 1000.00);
+	
 		System.out.println(accountService.getAccount(currentUser.getUser().getId()).getBalance());
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(1));
-		System.out.println(transfers.get(0).getAmountTransferred());
+		int userAccountId = accountService.getAccount(currentUser.getUser().getId()).getAccountId();
+		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(userAccountId));
+		
+		for (int i = 0; i < transfers.size(); i++) {
+    		console.printTransferDeatils(userService.findUserByAccountId(transfers.get(i).getAccountFromId()).getUsername(), 
+    				userService.findUserByAccountId(transfers.get(i).getAccountToId()).getUsername(), transfers.get(i), i + 1 + ".");
+    		}
+	}
+	
+	private void viewUsersRequests() {
+		int userFromAccountId = accountService.getAccount(currentUser.getUser().getId()).getAccountId();
+		List<Transfer> transfers = Arrays.asList(transferService.getPendingTransfers(userFromAccountId));
+		
+		for (int i = 0; i < transfers.size(); i++) {
+			if (userFromAccountId == transfers.get(i).getAccountFromId()) {
+				console.printApproveRejectTransfer(transfers.get(i), userService.findUserByAccountId(transfers.get(i).getAccountToId()).getUsername());
+			}
+		}
+		
+	
 	}
 
 	private void sendBucks() {
@@ -128,11 +149,26 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		User userTo = userService.getUserByUsername(userToName);
 		accountService.addMoney(accountService.getAccount(userTo.getId()), userTo.getId(), transfer.getAmountTransferred());
 		accountService.removeMoney(accountService.getAccount(currentUser.getUser().getId()), currentUser.getUser().getId(), transfer.getAmountTransferred());
-		console.printTransferDeatils(currentUser.getUser(), userTo, transfer, "You successfully transferred money to " + userToName + "!");
+		console.printTransferDeatils(currentUser.getUser().getUsername(), userTo.getUsername(), transfer, "You successfully transferred money to " + userToName + "!");
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+		console.printMessageToUser("Which user would you like to request money from? (0 to cancel)");
+		String userFromName = getNameFromUser();
+		if(userFromName.equals(currentUser.getUser().getUsername())) {
+			console.printMessageToUser("You cannot request money from yourself.......");
+		}
+		Transfer transfer = getTransferRequestInfo();
+		transfer.setAccountFromId(accountService.getAccount(userService.getIdByUsername(userFromName)).getAccountId());
+		if(transfer.getAmountTransferred() == Integer.MAX_VALUE) {
+			console.printMessageToUser("Transaction cancelled.");
+			return;
+		}
+		
+		transfer = transferService.requestMoney(transfer);
+		User userFrom = userService.getUserByUsername(userFromName);
+		console.printTransferDeatils(userFrom.getUsername(), currentUser.getUser().getUsername(), transfer, "You successfully requested money from " + userFromName + "!");
+		
 		
 	}
 	
@@ -191,13 +227,25 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private Transfer getTransferInfo() {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
-		double amountToSend = console.getMoneyChoiceFromUser();
+		double amountToSend = console.getMoneyChoiceFromUser("How much money would you like to send?  >>>> ");
 		if (amountToSend == 0) {
 			transfer.setAmountTransferred(Integer.MAX_VALUE);
 		}
 		transfer.setAmountTransferred(amountToSend);
 		return transfer;
 	}
+	
+	private Transfer getTransferRequestInfo() {
+		Transfer transfer = new Transfer();
+		transfer.setAccountToId(accountService.getAccount(currentUser.getUser().getId()).getAccountId());
+		double amountToSend = console.getMoneyChoiceFromUser("How much money would you like to request?  >>>> ");
+		if (amountToSend == 0) {
+			transfer.setAmountTransferred(Integer.MAX_VALUE);
+		}
+		transfer.setAmountTransferred(amountToSend);
+		return transfer;
+	}
+	
 	private void login() {
 		System.out.println("Please log in");
 		currentUser = null;

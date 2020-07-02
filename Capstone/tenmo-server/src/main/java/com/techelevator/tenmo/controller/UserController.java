@@ -38,4 +38,9 @@ public class UserController {
 	public int findUserIdByName(@PathVariable String username) {
 		return userDao.findIdByUsername(username);
 	}
+	
+	@RequestMapping(path = "/accounts/{id}/users", method = RequestMethod.GET)
+	public User findUserByAccountId(@PathVariable("id") int accountId) {
+		return userDao.findUserByAccountId(accountId);
+	}
 }
