@@ -1,21 +1,19 @@
 package com.techelevator.tenmo.controller;
 
-
-import java.util.ArrayList;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.model.User;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class UserController {
 	
-	private String baseUrl = "http://localhost:8080";
+
 	private UserDAO userDao;
 	
 	public UserController(UserDAO userDao) {

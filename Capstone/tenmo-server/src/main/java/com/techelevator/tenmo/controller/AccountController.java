@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
 
-
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class AccountController {
 	
@@ -22,7 +22,7 @@ public class AccountController {
 	public AccountController(AccountDao accountDao) {
 		this.accountDao = accountDao;
 	}
-	@PreAuthorize("isAuthenticated()")
+	
 	@RequestMapping(path = "/accounts/{id}", method = RequestMethod.GET)
 	public Account getAccount(@PathVariable("id") long userId) {
 		return accountDao.getAccount(userId);

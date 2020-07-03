@@ -1,12 +1,10 @@
 package com.techelevator.tenmo;
 
-import java.awt.Choice;
-import java.lang.reflect.Array;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.Transfer;
@@ -18,8 +16,6 @@ import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
-
-import io.cucumber.core.backend.Pending;
 
 public class App {
 
@@ -142,6 +138,7 @@ public class App {
 		if (transfers.size() < 1) {
 			return;
 		}
+		
 		Transfer transferToUse = null;
 		while (transferToUse == null) {
 			int transferId = console.getUserInputInteger("Please enter transfer ID to approve/reject (0 to cancel)");
@@ -151,7 +148,8 @@ public class App {
 					transferToUse = transfer;
 				}
 			}
-			if (transferId == 0) {
+			if (transferId == Integer.MAX_VALUE) {
+				console.printMessageToUser("Cancelled");
 				return;
 			}
 		}
@@ -233,7 +231,7 @@ public class App {
 		transfer.setAccountToId(accountService.getAccount(userService.getIdByUsername(userToName)).getAccountId());
 
 		if (transfer.getAmountTransferred() == Integer.MAX_VALUE) {
-			console.printMessageToUser("Transaction cancelled.");
+			console.printMessageToUser("Cancelled.");
 			return;
 		} else if (accountService.getAccount(currentUser.getUser().getId()).getBalance() < transfer
 				.getAmountTransferred()) {
@@ -271,7 +269,7 @@ public class App {
 		Transfer transfer = getTransferRequestInfo();
 		transfer.setAccountFromId(accountService.getAccount(userService.getIdByUsername(userFromName)).getAccountId());
 		if (transfer.getAmountTransferred() == Integer.MAX_VALUE) {
-			console.printMessageToUser("Transaction cancelled.");
+			console.printMessageToUser("Cancelled.");
 			return;
 		}
 
@@ -285,6 +283,7 @@ public class App {
 	private void setAuthToken() {
 		transferService.setAuthToken(currentUser.getToken());
 		accountService.setAuthToken(currentUser.getToken());
+		userService.setAuthToken(currentUser.getToken());
 	}
 
 	private void exitProgram() {
